@@ -11,6 +11,12 @@ type MatchGoOrmAdapter struct {
 	db *gorm.DB
 }
 
+func (m MatchGoOrmAdapter) FindById(id int) domain.Match {
+	var match domain.Match
+	m.db.Find(&match, id)
+	return match
+}
+
 func (m MatchGoOrmAdapter) FindAll() []domain.Match {
 	var matches []domain.Match
 	m.db.Find(&matches)

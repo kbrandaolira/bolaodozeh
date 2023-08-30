@@ -10,11 +10,12 @@ import (
 )
 
 type handler struct {
-	createUserUseCase useCase.CreateUserUseCase
+	createUserUseCase  useCase.CreateUserUseCase
+	updateGuessUseCase useCase.UpdateGuessUseCase
 }
 
-func New(createUserUseCase useCase.CreateUserUseCase) handler {
-	return handler{createUserUseCase: createUserUseCase}
+func New(createUserUseCase useCase.CreateUserUseCase, updateGuessUseCase useCase.UpdateGuessUseCase) handler {
+	return handler{createUserUseCase: createUserUseCase, updateGuessUseCase: updateGuessUseCase}
 }
 
 func (h handler) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -29,4 +30,18 @@ func (h handler) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode("Created")
+}
+
+func (h handler) UpdateGuessHandler(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	var guess domain.Guess
+	json.Unmarshal(body, &guess)
+	h.updateGuessUseCase.Execute(&guess)
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode("Updated")
 }

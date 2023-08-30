@@ -19,10 +19,12 @@ func main() {
 	matchGoOrmAdapter := adapter.NewMatchGoOrmAdapter(db)
 	createBlankGuessForUserUseCase := useCase.NewCreateBlankGuessForUserUseCase(guessGoOrmAdapter, matchGoOrmAdapter)
 	createUserUseCase := useCase.NewCreateUserUseCase(userGoOrmAdapter, createBlankGuessForUserUseCase)
-	handler := handler.New(createUserUseCase)
+	updateGuessUseCase := useCase.NewUpdateGuessUseCase(guessGoOrmAdapter, matchGoOrmAdapter)
+	handler := handler.New(createUserUseCase, updateGuessUseCase)
 	// routes
 	router := mux.NewRouter()
 	router.HandleFunc("/users", handler.CreateUserHandler).Methods(http.MethodPost)
+	router.HandleFunc("/guesses", handler.UpdateGuessHandler).Methods(http.MethodPut)
 	// start
 	http.ListenAndServe(":4000", router)
 }
