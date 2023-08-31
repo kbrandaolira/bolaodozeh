@@ -11,7 +11,12 @@ type GuessGoOrmAdapter struct {
 	db *gorm.DB
 }
 
-// Update implements repository.GuessRepository.
+func (g GuessGoOrmAdapter) FindById(id int) domain.Guess {
+	var guess domain.Guess
+	g.db.Find(&guess, id)
+	return guess
+}
+
 func (g GuessGoOrmAdapter) Update(guess *domain.Guess) {
 	g.db.Save(guess)
 }

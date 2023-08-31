@@ -1,12 +1,16 @@
 package handler
 
 import (
+	"bolaodozeh/application/handler/dto"
 	domain "bolaodozeh/domain/model"
 	"bolaodozeh/domain/useCase"
 	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 type handler struct {
@@ -38,9 +42,11 @@ func (h handler) UpdateGuessHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	var guess domain.Guess
-	json.Unmarshal(body, &guess)
-	h.updateGuessUseCase.Execute(&guess)
+	params := mux.Vars(r)
+	var dto dto.UpdateGuessDto
+	json.Unmarshal(body, &dto)
+	dto.GuessId, _ = strconv.Atoi(params["id"])
+	h.updateGuessUseCase.Execute(dto)
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode("Updated")

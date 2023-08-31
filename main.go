@@ -23,8 +23,8 @@ func main() {
 	handler := handler.New(createUserUseCase, updateGuessUseCase)
 	// routes
 	router := mux.NewRouter()
-	router.HandleFunc("/users", handler.CreateUserHandler).Methods(http.MethodPost)
-	router.HandleFunc("/guesses", handler.UpdateGuessHandler).Methods(http.MethodPut)
+	router.HandleFunc("/user", handler.CreateUserHandler).Methods(http.MethodPost)
+	router.HandleFunc("/guess/{id}", handler.UpdateGuessHandler).Methods(http.MethodPut)
 	// start
 	http.ListenAndServe(":4000", router)
 }

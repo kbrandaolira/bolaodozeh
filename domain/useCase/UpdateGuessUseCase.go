@@ -1,7 +1,7 @@
 package useCase
 
 import (
-	domain "bolaodozeh/domain/model"
+	"bolaodozeh/application/handler/dto"
 	"bolaodozeh/domain/repository"
 	"time"
 )
@@ -15,14 +15,15 @@ func NewUpdateGuessUseCase(guessRepository repository.GuessRepository, matchRepo
 	return UpdateGuessUseCase{guessRepository: guessRepository, matchRepository: matchRepository}
 }
 
-func (u UpdateGuessUseCase) Execute(guess *domain.Guess) {
+func (u UpdateGuessUseCase) Execute(dto dto.UpdateGuessDto) {
+	guess := u.guessRepository.FindById(dto.GuessId)
 	match := u.matchRepository.FindById(guess.MatchId)
 	now := time.Now()
 	if now.After(match.DateTime) {
 		//TODO validar não é possível palpitar após inicio do jogo
 	} else {
-		var NilPoints uint
-		guess.Points = NilPoints
-		u.guessRepository.Update(guess)
+		guess.HomeTeamScore = &dto.HomeTeamScore
+		guess.AwayTeamScore = &dto.AwayTeamScore
+		u.guessRepository.Update(&guess)
 	}
 }
