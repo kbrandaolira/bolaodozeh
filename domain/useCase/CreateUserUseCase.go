@@ -4,7 +4,7 @@ import (
 	domain "bolaodozeh/domain/model"
 	"bolaodozeh/domain/repository"
 
-	"golang.org/x/crypto/bcrypt"
+	"encoding/base64"
 )
 
 type CreateUserUseCase struct {
@@ -17,7 +17,7 @@ func NewCreateUserUseCase(userRepository repository.UserRepository, createBlankG
 }
 
 func (c CreateUserUseCase) Execute(user *domain.User) {
-	passwordEncrypted, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	passwordEncrypted := base64.StdEncoding.EncodeToString([]byte(user.Password))
 	user.Password = string(passwordEncrypted)
 	user.Id = c.userRepository.Insert(user)
 	c.createBlankGuessForUserUseCase.Execute(user)

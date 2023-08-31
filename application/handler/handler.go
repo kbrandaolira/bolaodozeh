@@ -16,10 +16,11 @@ import (
 type handler struct {
 	createUserUseCase  useCase.CreateUserUseCase
 	updateGuessUseCase useCase.UpdateGuessUseCase
+	loginUseCase       useCase.LoginUseCase
 }
 
-func New(createUserUseCase useCase.CreateUserUseCase, updateGuessUseCase useCase.UpdateGuessUseCase) handler {
-	return handler{createUserUseCase: createUserUseCase, updateGuessUseCase: updateGuessUseCase}
+func New(createUserUseCase useCase.CreateUserUseCase, updateGuessUseCase useCase.UpdateGuessUseCase, loginUseCase useCase.LoginUseCase) handler {
+	return handler{createUserUseCase: createUserUseCase, updateGuessUseCase: updateGuessUseCase, loginUseCase: loginUseCase}
 }
 
 func (h handler) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +34,23 @@ func (h handler) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	h.createUserUseCase.Execute(&user)
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode("Created")
+}
+
+func (h handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	var dto dto.LoginDto
+	json.Unmarshal(body, &dto)
+	logged := h.loginUseCase.Execute(&dto)
+	w.Header().Add("Content-Type", "application/json")
+	if logged {
+		w.WriteHeader(http.StatusOK)
+	} else {
+		w.WriteHeader(http.StatusUnauthorized)
+	}
 }
 
 func (h handler) UpdateGuessHandler(w http.ResponseWriter, r *http.Request) {
@@ -48,6 +65,5 @@ func (h handler) UpdateGuessHandler(w http.ResponseWriter, r *http.Request) {
 	dto.GuessId, _ = strconv.Atoi(params["id"])
 	h.updateGuessUseCase.Execute(dto)
 	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode("Updated")
+	w.WriteHeader(http.StatusNoContent)
 }

@@ -20,10 +20,12 @@ func main() {
 	createBlankGuessForUserUseCase := useCase.NewCreateBlankGuessForUserUseCase(guessGoOrmAdapter, matchGoOrmAdapter)
 	createUserUseCase := useCase.NewCreateUserUseCase(userGoOrmAdapter, createBlankGuessForUserUseCase)
 	updateGuessUseCase := useCase.NewUpdateGuessUseCase(guessGoOrmAdapter, matchGoOrmAdapter)
-	handler := handler.New(createUserUseCase, updateGuessUseCase)
+	loginUseCase := useCase.NewLoginUseCase(userGoOrmAdapter)
+	handler := handler.New(createUserUseCase, updateGuessUseCase, loginUseCase)
 	// routes
 	router := mux.NewRouter()
 	router.HandleFunc("/user", handler.CreateUserHandler).Methods(http.MethodPost)
+	router.HandleFunc("/login", handler.LoginHandler).Methods(http.MethodPost)
 	router.HandleFunc("/guess/{id}", handler.UpdateGuessHandler).Methods(http.MethodPut)
 	// start
 	http.ListenAndServe(":4000", router)

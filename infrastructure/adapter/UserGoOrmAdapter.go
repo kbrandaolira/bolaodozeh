@@ -12,10 +12,14 @@ type UserGoOrmAdapter struct {
 }
 
 // FindByEmailAndPassword implements repository.UserRepository.
-func (u UserGoOrmAdapter) FindByEmailAndPassword(email string, password string) domain.User {
+func (u UserGoOrmAdapter) FindByEmailAndPassword(email string, password string) *domain.User {
 	var user domain.User
-	u.db.First(&user).Where("email = ? and password = ?", email, password)
-	return user
+	result := u.db.Where("email = ? and password = ?", email, password).First(&user)
+	if result.RowsAffected == 0 {
+		return nil
+	}
+
+	return &user
 }
 
 // Insert implements repository.UserRepository.
