@@ -19,7 +19,7 @@ func (m MatchGoOrmAdapter) FindById(id int) domain.Match {
 
 func (m MatchGoOrmAdapter) FindAll() []domain.Match {
 	var matches []domain.Match
-	m.db.Find(&matches)
+	m.db.Order("date_time asc").Find(&matches)
 	return matches
 
 }

@@ -11,6 +11,13 @@ type GuessGoOrmAdapter struct {
 	db *gorm.DB
 }
 
+// FindByMatchId implements repository.GuessRepository.
+func (g GuessGoOrmAdapter) FindByMatchIdAndUserId(matchId int, userId int) domain.Guess {
+	var guess domain.Guess
+	g.db.Where("match_id = ? and user_id = ?", matchId, userId).First(&guess)
+	return guess
+}
+
 func (g GuessGoOrmAdapter) FindById(id int) domain.Guess {
 	var guess domain.Guess
 	g.db.Find(&guess, id)

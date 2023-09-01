@@ -6,4 +6,5 @@ type GuessRepository interface {
 	Insert(guess *domain.Guess) int
 	Update(guess *domain.Guess)
 	FindById(id int) domain.Guess
+	FindByMatchIdAndUserId(matchId int, userId int) domain.Guess
 }

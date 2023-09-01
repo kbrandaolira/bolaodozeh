@@ -17,10 +17,20 @@ type handler struct {
 	createUserUseCase  useCase.CreateUserUseCase
 	updateGuessUseCase useCase.UpdateGuessUseCase
 	loginUseCase       useCase.LoginUseCase
+	findGuessUseCase   useCase.FindGuessUseCase
 }
 
-func New(createUserUseCase useCase.CreateUserUseCase, updateGuessUseCase useCase.UpdateGuessUseCase, loginUseCase useCase.LoginUseCase) handler {
-	return handler{createUserUseCase: createUserUseCase, updateGuessUseCase: updateGuessUseCase, loginUseCase: loginUseCase}
+func New(createUserUseCase useCase.CreateUserUseCase,
+	updateGuessUseCase useCase.UpdateGuessUseCase,
+	loginUseCase useCase.LoginUseCase,
+	findGuessUseCase useCase.FindGuessUseCase,
+) handler {
+	return handler{
+		createUserUseCase:  createUserUseCase,
+		updateGuessUseCase: updateGuessUseCase,
+		loginUseCase:       loginUseCase,
+		findGuessUseCase:   findGuessUseCase,
+	}
 }
 
 func (h handler) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -66,4 +76,15 @@ func (h handler) UpdateGuessHandler(w http.ResponseWriter, r *http.Request) {
 	h.updateGuessUseCase.Execute(dto)
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h handler) FindGuessHandler(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	params := mux.Vars(r)
+	userId, _ := strconv.Atoi(params["userId"])
+
+	guessDto, _ := json.Marshal(h.findGuessUseCase.Execute(userId))
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(guessDto)
 }

@@ -24,6 +24,7 @@ func (u UpdateGuessUseCase) Execute(dto dto.UpdateGuessDto) {
 	} else {
 		guess.HomeTeamScore = &dto.HomeTeamScore
 		guess.AwayTeamScore = &dto.AwayTeamScore
+		guess.UpdatedAt = time.Now()
 		u.guessRepository.Update(&guess)
 	}
 }
