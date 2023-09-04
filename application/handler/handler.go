@@ -18,18 +18,21 @@ type handler struct {
 	updateGuessUseCase useCase.UpdateGuessUseCase
 	loginUseCase       useCase.LoginUseCase
 	findGuessUseCase   useCase.FindGuessUseCase
+	updateMatchUseCase useCase.UpdateMatchUseCase
 }
 
 func New(createUserUseCase useCase.CreateUserUseCase,
 	updateGuessUseCase useCase.UpdateGuessUseCase,
 	loginUseCase useCase.LoginUseCase,
 	findGuessUseCase useCase.FindGuessUseCase,
+	updateMatchUseCase useCase.UpdateMatchUseCase,
 ) handler {
 	return handler{
 		createUserUseCase:  createUserUseCase,
 		updateGuessUseCase: updateGuessUseCase,
 		loginUseCase:       loginUseCase,
 		findGuessUseCase:   findGuessUseCase,
+		updateMatchUseCase: updateMatchUseCase,
 	}
 }
 
@@ -87,4 +90,19 @@ func (h handler) FindGuessHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(guessDto)
+}
+
+func (h handler) UpdateMatchHandler(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	params := mux.Vars(r)
+	var dto dto.UpdateMatchDto
+	json.Unmarshal(body, &dto)
+	dto.MatchId, _ = strconv.Atoi(params["id"])
+	h.updateMatchUseCase.Execute(dto)
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNoContent)
 }

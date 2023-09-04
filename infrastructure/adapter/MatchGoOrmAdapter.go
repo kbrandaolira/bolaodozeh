@@ -11,6 +11,10 @@ type MatchGoOrmAdapter struct {
 	db *gorm.DB
 }
 
+func (m MatchGoOrmAdapter) Update(match *domain.Match) {
+	m.db.Save(match)
+}
+
 func (m MatchGoOrmAdapter) FindById(id int) domain.Match {
 	var match domain.Match
 	m.db.Find(&match, id)
