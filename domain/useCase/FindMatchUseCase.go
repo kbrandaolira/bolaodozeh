@@ -20,9 +20,9 @@ func (f FindMatchUseCase) Execute() []dto.MatchDto {
 		var dto = dto.MatchDto{
 			MatchId:       matches[i].Id,
 			HomeTeamName:  matches[i].HomeTeamName,
-			HomeTeamScore: *matches[i].HomeTeamScore,
+			HomeTeamScore: matches[i].HomeTeamScore,
 			AwayTeamName:  matches[i].AwayTeamName,
-			AwayTeamScore: *matches[i].AwayTeamScore,
+			AwayTeamScore: matches[i].AwayTeamScore,
 		}
 		dtos = append(dtos, dto)
 	}

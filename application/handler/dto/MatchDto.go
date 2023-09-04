@@ -3,7 +3,7 @@ package dto
 type MatchDto struct {
 	MatchId       int
 	HomeTeamName  string
-	HomeTeamScore int
+	HomeTeamScore *int
 	AwayTeamName  string
-	AwayTeamScore int
+	AwayTeamScore *int
 }

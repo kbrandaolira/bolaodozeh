@@ -14,28 +14,32 @@ import (
 )
 
 type handler struct {
-	createUserUseCase  useCase.CreateUserUseCase
-	updateGuessUseCase useCase.UpdateGuessUseCase
-	loginUseCase       useCase.LoginUseCase
-	findGuessUseCase   useCase.FindGuessUseCase
-	updateMatchUseCase useCase.UpdateMatchUseCase
-	findMatchUseCase   useCase.FindMatchUseCase
+	createUserUseCase     useCase.CreateUserUseCase
+	updateGuessUseCase    useCase.UpdateGuessUseCase
+	loginUseCase          useCase.LoginUseCase
+	findGuessUseCase      useCase.FindGuessUseCase
+	updateMatchUseCase    useCase.UpdateMatchUseCase
+	findMatchUseCase      useCase.FindMatchUseCase
+	classificationUseCase useCase.ClassificationUseCase
 }
 
-func New(createUserUseCase useCase.CreateUserUseCase,
+func New(
+	createUserUseCase useCase.CreateUserUseCase,
 	updateGuessUseCase useCase.UpdateGuessUseCase,
 	loginUseCase useCase.LoginUseCase,
 	findGuessUseCase useCase.FindGuessUseCase,
 	updateMatchUseCase useCase.UpdateMatchUseCase,
 	findMatchUseCase useCase.FindMatchUseCase,
+	classificationUseCase useCase.ClassificationUseCase,
 ) handler {
 	return handler{
-		createUserUseCase:  createUserUseCase,
-		updateGuessUseCase: updateGuessUseCase,
-		loginUseCase:       loginUseCase,
-		findGuessUseCase:   findGuessUseCase,
-		updateMatchUseCase: updateMatchUseCase,
-		findMatchUseCase:   findMatchUseCase,
+		createUserUseCase:     createUserUseCase,
+		updateGuessUseCase:    updateGuessUseCase,
+		loginUseCase:          loginUseCase,
+		findGuessUseCase:      findGuessUseCase,
+		updateMatchUseCase:    updateMatchUseCase,
+		findMatchUseCase:      findMatchUseCase,
+		classificationUseCase: classificationUseCase,
 	}
 }
 
@@ -116,4 +120,12 @@ func (h handler) FindMatchHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(matchDto)
+}
+
+func (h handler) ClassificationHandler(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	classificationDto, _ := json.Marshal(h.classificationUseCase.Execute())
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(classificationDto)
 }

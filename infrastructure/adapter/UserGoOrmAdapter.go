@@ -11,6 +11,13 @@ type UserGoOrmAdapter struct {
 	db *gorm.DB
 }
 
+// FindAll implements repository.UserRepository.
+func (u UserGoOrmAdapter) FindAll() []domain.User {
+	var users []domain.User
+	u.db.Order("name asc").Find(&users)
+	return users
+}
+
 // FindByEmailAndPassword implements repository.UserRepository.
 func (u UserGoOrmAdapter) FindByEmailAndPassword(email string, password string) *domain.User {
 	var user domain.User

@@ -11,12 +11,12 @@ import (
 )
 
 func main() {
-	//db
 	db := infrastructure.InitDB()
-	// app classes
+
 	userGoOrmAdapter := adapter.NewUserGoOrmAdapter(db)
 	guessGoOrmAdapter := adapter.NewGuessGoOrmAdapter(db)
 	matchGoOrmAdapter := adapter.NewMatchGoOrmAdapter(db)
+
 	createBlankGuessForUserUseCase := useCase.NewCreateBlankGuessForUserUseCase(guessGoOrmAdapter, matchGoOrmAdapter)
 	createUserUseCase := useCase.NewCreateUserUseCase(userGoOrmAdapter, createBlankGuessForUserUseCase)
 	updateGuessUseCase := useCase.NewUpdateGuessUseCase(guessGoOrmAdapter, matchGoOrmAdapter)
@@ -24,13 +24,18 @@ func main() {
 	findGuessUseCase := useCase.NewFindGuessUseCase(guessGoOrmAdapter, matchGoOrmAdapter)
 	updateMatchUseCase := useCase.NewUpdateMatchUseCase(matchGoOrmAdapter)
 	findMatchUseCase := useCase.NewFindMatchUseCase(matchGoOrmAdapter)
-	handler := handler.New(createUserUseCase,
+	classificationUseCase := useCase.NewClassificationUseCase(guessGoOrmAdapter, matchGoOrmAdapter, userGoOrmAdapter)
+
+	handler := handler.New(
+		createUserUseCase,
 		updateGuessUseCase,
 		loginUseCase,
 		findGuessUseCase,
 		updateMatchUseCase,
-		findMatchUseCase)
-	// routes
+		findMatchUseCase,
+		classificationUseCase,
+	)
+
 	router := mux.NewRouter()
 	router.HandleFunc("/user", handler.CreateUserHandler).Methods(http.MethodPost)
 	router.HandleFunc("/login", handler.LoginHandler).Methods(http.MethodPost)
@@ -38,6 +43,7 @@ func main() {
 	router.HandleFunc("/guess/{userId}", handler.FindGuessHandler).Methods(http.MethodGet)
 	router.HandleFunc("/match/{id}", handler.UpdateMatchHandler).Methods(http.MethodPut)
 	router.HandleFunc("/match", handler.FindMatchHandler).Methods(http.MethodGet)
-	// start
+	router.HandleFunc("/classification", handler.ClassificationHandler).Methods(http.MethodGet)
+
 	http.ListenAndServe(":4000", router)
 }
