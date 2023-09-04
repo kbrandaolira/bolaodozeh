@@ -23,7 +23,13 @@ func main() {
 	loginUseCase := useCase.NewLoginUseCase(userGoOrmAdapter)
 	findGuessUseCase := useCase.NewFindGuessUseCase(guessGoOrmAdapter, matchGoOrmAdapter)
 	updateMatchUseCase := useCase.NewUpdateMatchUseCase(matchGoOrmAdapter)
-	handler := handler.New(createUserUseCase, updateGuessUseCase, loginUseCase, findGuessUseCase, updateMatchUseCase)
+	findMatchUseCase := useCase.NewFindMatchUseCase(matchGoOrmAdapter)
+	handler := handler.New(createUserUseCase,
+		updateGuessUseCase,
+		loginUseCase,
+		findGuessUseCase,
+		updateMatchUseCase,
+		findMatchUseCase)
 	// routes
 	router := mux.NewRouter()
 	router.HandleFunc("/user", handler.CreateUserHandler).Methods(http.MethodPost)
@@ -31,6 +37,7 @@ func main() {
 	router.HandleFunc("/guess/{id}", handler.UpdateGuessHandler).Methods(http.MethodPut)
 	router.HandleFunc("/guess/{userId}", handler.FindGuessHandler).Methods(http.MethodGet)
 	router.HandleFunc("/match/{id}", handler.UpdateMatchHandler).Methods(http.MethodPut)
+	router.HandleFunc("/match", handler.FindMatchHandler).Methods(http.MethodGet)
 	// start
 	http.ListenAndServe(":4000", router)
 }

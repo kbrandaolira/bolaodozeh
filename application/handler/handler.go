@@ -19,6 +19,7 @@ type handler struct {
 	loginUseCase       useCase.LoginUseCase
 	findGuessUseCase   useCase.FindGuessUseCase
 	updateMatchUseCase useCase.UpdateMatchUseCase
+	findMatchUseCase   useCase.FindMatchUseCase
 }
 
 func New(createUserUseCase useCase.CreateUserUseCase,
@@ -26,6 +27,7 @@ func New(createUserUseCase useCase.CreateUserUseCase,
 	loginUseCase useCase.LoginUseCase,
 	findGuessUseCase useCase.FindGuessUseCase,
 	updateMatchUseCase useCase.UpdateMatchUseCase,
+	findMatchUseCase useCase.FindMatchUseCase,
 ) handler {
 	return handler{
 		createUserUseCase:  createUserUseCase,
@@ -33,6 +35,7 @@ func New(createUserUseCase useCase.CreateUserUseCase,
 		loginUseCase:       loginUseCase,
 		findGuessUseCase:   findGuessUseCase,
 		updateMatchUseCase: updateMatchUseCase,
+		findMatchUseCase:   findMatchUseCase,
 	}
 }
 
@@ -105,4 +108,12 @@ func (h handler) UpdateMatchHandler(w http.ResponseWriter, r *http.Request) {
 	h.updateMatchUseCase.Execute(dto)
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h handler) FindMatchHandler(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	matchDto, _ := json.Marshal(h.findMatchUseCase.Execute())
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(matchDto)
 }
